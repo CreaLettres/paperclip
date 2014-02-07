@@ -88,8 +88,8 @@ For Non-Rails usage:
 
 ```ruby
 class ModuleName < ActiveRecord::Base
-    include Paperclip::Glue
-    ...
+  include Paperclip::Glue
+  ...
 end
 ```
 
@@ -283,6 +283,24 @@ class BooksController < ApplicationController
   end
 end
 ```
+
+**A note on content_type validations and security**
+
+You should ensure that you validate files to be only those MIME types you
+explicitly want to support.  If you don't, you could be open to
+<a href="https://www.owasp.org/index.php/Testing_for_Stored_Cross_site_scripting_(OWASP-DV-002)">XSS attacks</a>
+if a user uploads a file with a malicious HTML payload.
+
+If you're only interested in images, restrict your allowed content_types to
+image-y ones:
+
+```ruby
+validates_attachment :avatar,
+  :content_type => { :content_type => ["image/jpg", "image/gif", "image/png"] }
+```
+
+`Paperclip::ContentTypeDetector` will attempt to match a file's extension to an
+inferred content_type, regardless of the actual contents of the file.
 
 Defaults
 --------
@@ -587,7 +605,7 @@ look as follows where a boss will receive a `300x300` thumbnail otherwise a
 
 ```ruby
 class User < ActiveRecord::Base
-  has_attached_file :avatar, :styles => lambda { |attachment| { :thumb => (attachment.instance.boss? ? "300x300>" : "100x100>") }
+  has_attached_file :avatar, :styles => lambda { |attachment| { :thumb => (attachment.instance.boss? ? "300x300>" : "100x100>") } }
 end
 ```
 
@@ -714,11 +732,11 @@ If you'd like to contribute a feature or bugfix: Thanks! To make sure your
 fix/feature has a high chance of being included, please read the following
 guidelines:
 
-1. Ask on the [mailing list](http://groups.google.com/group/paperclip-plugin), or
-   post a new [GitHub Issue](http://github.com/thoughtbot/paperclip/issues).
+1. Post a [pull request](https://github.com/thoughtbot/paperclip/compare/).
 2. Make sure there are tests! We will not accept any patch that is not tested.
    It's a rare time when explicit tests aren't needed. If you have questions
-   about writing tests for paperclip, please ask the mailing list.
+   about writing tests for paperclip, please open a
+   [GitHub issue](https://github.com/thoughtbot/paperclip/issues/new).
 
 Please see `CONTRIBUTING.md` for more details on contributing and running test.
 

@@ -312,8 +312,12 @@ module Paperclip
     # in the paperclip:refresh rake task and that's it. It will regenerate all
     # thumbnails forcefully, by reobtaining the original file and going through
     # the post-process again.
+    # NOTE: Calling reprocess WILL NOT delete existing files. This is due to
+    # inconsistencies in timing of S3 commands. It's possible that calling
+    # #reprocess! will lose data if the files are not kept.
     def reprocess!(*style_args)
       saved_only_process, @options[:only_process] = @options[:only_process], style_args
+      saved_preserve_files, @options[:preserve_files] = @options[:preserve_files], true
       begin
         assign(self)
         save
@@ -323,6 +327,7 @@ module Paperclip
         false
       ensure
         @options[:only_process] = saved_only_process
+        @options[:preserve_files] = saved_preserve_files
       end
     end
 

@@ -27,7 +27,7 @@ puts "Testing against version #{ActiveRecord::VERSION::STRING}"
 
 begin
   require 'ruby-debug'
-rescue LoadError => e
+rescue LoadError
   puts "debugger disabled"
 end
 
